@@ -131,6 +131,25 @@ public class CraftChunk implements Chunk {
     }
 
     @Override
+    public void setSticky(boolean sticky) {
+        final PlayerChunkMap playerChunkMap = worldServer.getPlayerChunkMap();
+        if (sticky) {
+            playerChunkMap.keepPlayerChunkTicking(getX(), getZ());
+        } else {
+            getHandle().setSticky(false);
+            final PlayerChunk playerChunk = playerChunkMap.getChunk(getX(), getZ());
+            if (playerChunk.c.isEmpty()) {
+                playerChunkMap.b(playerChunk);
+            }
+        }
+    }
+
+    @Override
+    public boolean isSticky() {
+        return getHandle().isSticky();
+    }
+
+    @Override
     public boolean isSlimeChunk() {
         // 987234911L is deterimined in EntitySlime when seeing if a slime can spawn in a chunk
         return getHandle().a(987234911L).nextInt(10) == 0;

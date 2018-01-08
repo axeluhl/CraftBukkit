@@ -19,6 +19,15 @@
  
      public PlayerChunkMap(WorldServer worldserver) {
          this.world = worldserver;
+@@ -78,7 +83,7 @@
+                             return chunk;
+                         }
+ 
+-                        if (!playerchunk.a(128.0D, PlayerChunkMap.a)) {
++                        if (!playerchunk.chunk.isSticky() && !playerchunk.a(128.0D, PlayerChunkMap.a)) { // CraftBukkit: always return force-ticking chunks
+                             continue;
+                         }
+ 
 @@ -169,7 +174,11 @@
                              break;
                          }
@@ -31,7 +40,7 @@
              }
          }
  
-@@ -231,6 +240,16 @@
+@@ -231,6 +240,28 @@
          return playerchunk;
      }
  
@@ -43,12 +52,24 @@
 +        }
 +        return false;
 +    }
++
++    /**
++     * Force-loads the chunk at the chunk coordinates specified and marks
++     * the resulting {@link PlayerChunk} with {@link PlayerChunk#setSticky(boolean)}.
++     * Useful for plugins that would like to force chunk ticks even in case they are not
++     * loaded yet, e.g., during plugin start-up.
++     */
++    public PlayerChunk keepPlayerChunkTicking(int x, int z) {
++        final PlayerChunk result = c(x, z);
++        result.chunk.setSticky(true);
++        return result;
++    }
 +    // CraftBukkit end
 +
      public void flagDirty(BlockPosition blockposition) {
          int i = blockposition.getX() >> 4;
          int j = blockposition.getZ() >> 4;
-@@ -249,12 +268,22 @@
+@@ -249,12 +280,22 @@
          entityplayer.d = entityplayer.locX;
          entityplayer.e = entityplayer.locZ;
  
@@ -72,7 +93,7 @@
          this.managedPlayers.add(entityplayer);
          this.e();
      }
-@@ -298,11 +327,14 @@
+@@ -298,11 +339,14 @@
              int j1 = i - k;
              int k1 = j - l;
  
@@ -88,7 +109,7 @@
                          }
  
                          if (!this.a(l1 - j1, i2 - k1, i, j, i1)) {
-@@ -318,6 +350,13 @@
+@@ -318,6 +362,13 @@
                  entityplayer.d = entityplayer.locX;
                  entityplayer.e = entityplayer.locZ;
                  this.e();
@@ -102,7 +123,7 @@
              }
          }
      }
-@@ -402,4 +441,47 @@
+@@ -402,4 +453,47 @@
          }
  
      }

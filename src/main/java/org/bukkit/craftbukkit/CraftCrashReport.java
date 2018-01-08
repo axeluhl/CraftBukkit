@@ -8,6 +8,7 @@ import java.util.concurrent.Callable;
 import net.minecraft.server.CrashReportCallable;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 
@@ -26,6 +27,10 @@ public class CraftCrashReport implements CrashReportCallable<Object> {
             }
             value.append("}\n   Warnings: ").append(Bukkit.getWarningState().name());
             value.append("\n   Reload Count: ").append(String.valueOf(MinecraftServer.getServer().server.reloadCount));
+            value.append("\n   Sticky Chunks Count:\n");
+            for (final World world : Bukkit.getWorlds()) {
+                value.append("     ").append(world.getName()).append(": ").append(Integer.toString(world.getStickyChunks().length)).append("\n");
+            }
             value.append("\n   Threads: {");
             for (Map.Entry<Thread, ? extends Object[]> entry : Thread.getAllStackTraces().entrySet()) {
                 value.append(' ').append(entry.getKey().getState().name()).append(' ').append(entry.getKey().getName()).append(": ").append(Arrays.toString(entry.getValue())).append(',');
