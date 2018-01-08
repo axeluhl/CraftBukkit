@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/PlayerChunk.java
 +++ b/net/minecraft/server/PlayerChunk.java
-@@ -8,32 +8,48 @@
+@@ -8,32 +8,55 @@
  import javax.annotation.Nullable;
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
@@ -32,6 +32,13 @@
 +            PlayerChunk.this.chunk = PlayerChunk.this.playerChunkMap.getWorld().getChunkProviderServer().getOrLoadChunkAt(location.x, location.z);
 +        }
 +    };
++
++    /**
++     * Keeps the player chunk in the PlayerChunkMap and hence ticking even if it contains no players anymore
++     * 
++     * @see #setSticky(boolean)
++     */
++    private boolean stickyInPlayerChunkMap;
 +    // CraftBukkit end
 +
      public PlayerChunk(PlayerChunkMap playerchunkmap, int i, int j) {
@@ -53,7 +60,7 @@
          if (this.c.contains(entityplayer)) {
              PlayerChunk.a.debug("Failed to add player. {} already is in chunk {}, {}", entityplayer, Integer.valueOf(this.location.x), Integer.valueOf(this.location.z));
          } else {
-@@ -42,15 +58,32 @@
+@@ -42,36 +65,85 @@
              }
  
              this.c.add(entityplayer);
@@ -75,7 +82,7 @@
 +            if (!this.done) {
 +                this.c.remove(entityplayer);
 +
-+                if (this.c.isEmpty()) {
++                if (this.c.isEmpty() && !isSticky()) { // Spigot: keep if forced, to cause chunk ticks
 +                    ChunkIOExecutor.dropQueuedChunkLoad(this.playerChunkMap.getWorld(), this.location.x, this.location.z, this.loadedRunnable);
 +                    this.playerChunkMap.b(this);
 +                }
@@ -86,7 +93,42 @@
              if (this.done) {
                  entityplayer.playerConnection.sendPacket(new PacketPlayOutUnloadChunk(this.location.x, this.location.z));
              }
-@@ -67,11 +100,18 @@
+ 
+             this.c.remove(entityplayer);
+-            if (this.c.isEmpty()) {
++            if (this.c.isEmpty() && !isSticky()) { // CraftBukkit: keep if forced, to cause chunk ticks
+                 this.playerChunkMap.b(this);
+             }
+ 
+         }
+     }
+ 
++    
++    // CraftBukkit start - release this PlayerChunk if already empty
++    /**
++     * @return {@code true} whether this player chunk will remain loaded even if it has no player associated anymore
++     */
++    public boolean isSticky() {
++        return stickyInPlayerChunkMap;
++    }
++    
++    /**
++     * Forces this player chunk to remain in its {@link #playerChunkMap} even if it contains
++     * no player entities anymore in case {@code sticky} is {@code true}; if {@code sticky} is
++     * {@code false} and no player is seeing this chunk, the chunk is removed from the
++     * {@link org.bukkit.PlayerChunkMap}.
++     */
++    public void setSticky(boolean sticky) {
++        stickyInPlayerChunkMap = sticky;
++        if (!sticky) {
++            if (this.c.isEmpty()) {
++                this.playerChunkMap.b(this);
++            }
++        }
++    }
++    // CraftBukkit end
++
+     public boolean a(boolean flag) {
          if (this.chunk != null) {
              return true;
          } else {
