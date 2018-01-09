@@ -29,7 +29,7 @@ public class CraftCrashReport implements CrashReportCallable<Object> {
             value.append("\n   Reload Count: ").append(String.valueOf(MinecraftServer.getServer().server.reloadCount));
             value.append("\n   Sticky Chunks Count:\n");
             for (final World world : Bukkit.getWorlds()) {
-                value.append("     ").append(world.getName()).append(": ").append(Integer.toString(world.getLoadedChunks().length)).append("\n");
+                value.append("     ").append(world.getName()).append(": ").append(Integer.toString(world.getStickyChunks().length)).append("\n");
             }
             value.append("\n   Threads: {");
             for (Map.Entry<Thread, ? extends Object[]> entry : Thread.getAllStackTraces().entrySet()) {
