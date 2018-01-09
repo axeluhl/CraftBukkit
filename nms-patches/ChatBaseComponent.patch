@@ -5,7 +5,7 @@
  
      public Iterator<IChatBaseComponent> iterator() {
 -        return Iterators.concat(Iterators.forArray(new ChatBaseComponent[] { this}), a((Iterable) this.a));
-+        return Iterators.concat(Iterators.forArray(new ChatBaseComponent[] { this}), a((Iterable<IChatBaseComponent>) this.a));
++        return Iterators.concat(Iterators.forArray(new ChatBaseComponent[] { this}), a((Iterable<IChatBaseComponent>) this.a)); // CraftBukkit - fix decompile error
      }
  
      public final String toPlainText() {

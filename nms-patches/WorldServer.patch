@@ -321,7 +321,7 @@
                  chunk.n();
                  this.methodProfiler.c("tickChunk");
                  chunk.b(false);
-+                if ( !manager.getChunk(chunk.locX, chunk.locZ).isSticky()) continue; // CraftBukkit
++                if ( !manager.getChunk(chunk.locX, chunk.locZ).chunk.isSticky()) continue; // CraftBukkit
                  this.methodProfiler.c("thunder");
                  int l;
                  BlockPosition blockposition;

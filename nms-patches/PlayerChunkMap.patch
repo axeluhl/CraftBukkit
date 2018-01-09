@@ -24,7 +24,7 @@
                          }
  
 -                        if (!playerchunk.a(128.0D, PlayerChunkMap.a)) {
-+                        if (!playerchunk.isSticky() && !playerchunk.a(128.0D, PlayerChunkMap.a)) { // Spigot: always return force-ticking chunks
++                        if (!playerchunk.chunk.isSticky() && !playerchunk.a(128.0D, PlayerChunkMap.a)) { // CraftBukkit: always return force-ticking chunks
                              continue;
                          }
  
@@ -61,7 +61,7 @@
 +     */
 +    public PlayerChunk keepPlayerChunkTicking(int x, int z) {
 +        final PlayerChunk result = c(x, z);
-+        result.setSticky(true);
++        result.chunk.setSticky(true);
 +        return result;
 +    }
 +    // CraftBukkit end
