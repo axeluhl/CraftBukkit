@@ -287,11 +287,6 @@ public class CraftWorld implements World {
     }
 
     @Override
-    public boolean isChunkSticky(Chunk chunk) {
-        return isChunkSticky(chunk.getX(), chunk.getZ());
-    }
-
-    @Override
     public boolean isChunkSticky(int x, int z) {
         return isChunkLoaded(x, z) && getChunkAt(x, z).isSticky();
     }
