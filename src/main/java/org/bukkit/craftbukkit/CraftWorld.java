@@ -275,6 +275,27 @@ public class CraftWorld implements World {
         return isChunkLoaded(chunk.getX(), chunk.getZ());
     }
 
+    @Override
+    public Chunk[] getStickyChunks() {
+        final Set<Chunk> stickyChunks = new HashSet<>();
+        for (final Chunk loadedChunk : getLoadedChunks()) {
+            if (loadedChunk.isSticky()) {
+                stickyChunks.add(loadedChunk);
+            }
+        }
+        return stickyChunks.toArray(new Chunk[stickyChunks.size()]);
+    }
+
+    @Override
+    public boolean isChunkSticky(Chunk chunk) {
+        return isChunkSticky(chunk.getX(), chunk.getZ());
+    }
+
+    @Override
+    public boolean isChunkSticky(int x, int z) {
+        return isChunkLoaded(x, z) && getChunkAt(x, z).isSticky();
+    }
+
     public void loadChunk(Chunk chunk) {
         loadChunk(chunk.getX(), chunk.getZ());
         ((CraftChunk) getChunkAt(chunk.getX(), chunk.getZ())).getHandle().bukkitChunk = chunk;
