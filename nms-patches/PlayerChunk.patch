@@ -97,7 +97,7 @@
 +            if (!this.done) {
 +                this.c.remove(entityplayer);
 +
-+                if (this.c.isEmpty() && !chunk.isSticky()) { // CraftBukkit: keep if forced, to cause chunk ticks
++                if (this.c.isEmpty() && (chunk == null || !chunk.isSticky())) { // CraftBukkit: keep if forced, to cause chunk ticks
 +                    ChunkIOExecutor.dropQueuedChunkLoad(this.playerChunkMap.getWorld(), this.location.x, this.location.z, this.loadedRunnable);
 +                    this.playerChunkMap.b(this);
 +                }
