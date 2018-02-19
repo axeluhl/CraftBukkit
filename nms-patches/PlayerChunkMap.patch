@@ -61,7 +61,7 @@
 +     */
 +    public PlayerChunk keepPlayerChunkTicking(int x, int z) {
 +        final PlayerChunk result = c(x, z);
-+        result.chunk.setSticky(true);
++        result.setSticky();
 +        return result;
 +    }
 +    // CraftBukkit end

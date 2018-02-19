@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/PlayerChunk.java
 +++ b/net/minecraft/server/PlayerChunk.java
-@@ -8,32 +8,48 @@
+@@ -8,32 +8,70 @@
  import javax.annotation.Nullable;
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
@@ -26,10 +26,17 @@
  
 +    // CraftBukkit start - add fields
 +    private boolean loadInProgress = false;
-+    private Runnable loadedRunnable = new Runnable() {
++    private boolean markStickyAfterLoading = false;
++    private final Runnable loadedRunnable = new Runnable() {
 +        public void run() {
 +            loadInProgress = false;
-+            PlayerChunk.this.chunk = PlayerChunk.this.playerChunkMap.getWorld().getChunkProviderServer().getOrLoadChunkAt(location.x, location.z);
++            final ChunkProviderServer chunkProviderServer = PlayerChunk.this.playerChunkMap.getWorld().getChunkProviderServer();
++            synchronized (this) { // see setSticky() which synchronizes on loadedRunnable, too
++                PlayerChunk.this.chunk = chunkProviderServer.getOrLoadChunkAt(location.x, location.z);
++                if (markStickyAfterLoading) {
++                    PlayerChunk.this.chunk.setSticky(true);
++                }
++            }
 +        }
 +    };
 +    // CraftBukkit end
@@ -43,6 +50,21 @@
 +        this.chunk = playerchunkmap.getWorld().getChunkProviderServer().getChunkAt(i, j, loadedRunnable, false);
 +        // CraftBukkit end
      }
++    
++    // CraftBukkit start
++    void setSticky() {
++        // synchronize on loadedRunnable to avoid race condition where the loadedRunnable callback sets this.chunk
++        // after the null check here but before the markStickyAfterLoading=true assignment takes effect; if this
++        // happened, loadedCallback would not set the chunk sticky, and this method here wouldn't set it sticky, either
++        synchronized (loadedRunnable) {
++            if (this.chunk == null) {
++                markStickyAfterLoading = true;
++            } else {
++                this.chunk.setSticky(true);
++            }
++        }
++    }
++    // CraftBukkit end
  
      public ChunkCoordIntPair a() {
          return this.location;
@@ -53,7 +75,7 @@
          if (this.c.contains(entityplayer)) {
              PlayerChunk.a.debug("Failed to add player. {} already is in chunk {}, {}", entityplayer, Integer.valueOf(this.location.x), Integer.valueOf(this.location.z));
          } else {
-@@ -42,36 +58,61 @@
+@@ -42,36 +80,61 @@
              }
  
              this.c.add(entityplayer);
