@@ -45,7 +45,7 @@
      }
  
 -    private PlayerChunk c(int i, int j) {
-+    public PlayerChunk c(int i, int j) { // CraftBukkit - made public
++    public PlayerChunk c(int i, int j) { // CraftBukkit private -> public // PAIL rename getOrCreatePlayerChunk
          long k = d(i, j);
          PlayerChunk playerchunk = (PlayerChunk) this.e.get(k);
  
