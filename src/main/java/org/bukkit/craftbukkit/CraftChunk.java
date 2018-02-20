@@ -136,7 +136,8 @@ public class CraftChunk implements Chunk {
         if (sticky) {
             // Force-load the chunk at the chunk coordinates specified and mark
             // the resulting PlayerChunk with PlayerChunk.setSticky(boolean).
-            playerChunkMap.keepPlayerChunkTicking(getX(), getZ());
+            final PlayerChunk result = playerChunkMap.c(x, z); // PAIL rename
+            result.setSticky();
         } else {
             getHandle().sticky = false;
             final PlayerChunk playerChunk = playerChunkMap.getChunk(getX(), getZ());

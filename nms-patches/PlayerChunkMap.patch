@@ -40,7 +40,16 @@
              }
          }
  
-@@ -231,6 +240,22 @@
+@@ -211,7 +220,7 @@
+         return (PlayerChunk) this.e.get(d(i, j));
+     }
+ 
+-    private PlayerChunk c(int i, int j) {
++    public PlayerChunk c(int i, int j) { // CraftBukkit - made public
+         long k = d(i, j);
+         PlayerChunk playerchunk = (PlayerChunk) this.e.get(k);
+ 
+@@ -231,6 +240,16 @@
          return playerchunk;
      }
  
@@ -52,18 +61,12 @@
 +        }
 +        return false;
 +    }
-+
-+    public PlayerChunk keepPlayerChunkTicking(int x, int z) {
-+        final PlayerChunk result = c(x, z);
-+        result.setSticky();
-+        return result;
-+    }
 +    // CraftBukkit end
 +
      public void flagDirty(BlockPosition blockposition) {
          int i = blockposition.getX() >> 4;
          int j = blockposition.getZ() >> 4;
-@@ -249,12 +274,22 @@
+@@ -249,12 +268,22 @@
          entityplayer.d = entityplayer.locX;
          entityplayer.e = entityplayer.locZ;
  
@@ -87,7 +90,7 @@
          this.managedPlayers.add(entityplayer);
          this.e();
      }
-@@ -298,11 +333,14 @@
+@@ -298,11 +327,14 @@
              int j1 = i - k;
              int k1 = j - l;
  
@@ -103,7 +106,7 @@
                          }
  
                          if (!this.a(l1 - j1, i2 - k1, i, j, i1)) {
-@@ -318,6 +356,13 @@
+@@ -318,6 +350,13 @@
                  entityplayer.d = entityplayer.locX;
                  entityplayer.e = entityplayer.locZ;
                  this.e();
@@ -117,7 +120,7 @@
              }
          }
      }
-@@ -402,4 +447,47 @@
+@@ -402,4 +441,47 @@
          }
  
      }

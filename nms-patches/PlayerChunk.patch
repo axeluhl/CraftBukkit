@@ -49,7 +49,7 @@
 +    }
 +    
 +    // CraftBukkit start
-+    void setSticky() {
++    public void setSticky() {
 +        if (this.chunk == null) {
 +            markStickyAfterLoading = true;
 +        } else {
