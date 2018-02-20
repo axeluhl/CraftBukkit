@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/PlayerChunk.java
 +++ b/net/minecraft/server/PlayerChunk.java
-@@ -8,32 +8,63 @@
+@@ -8,32 +8,62 @@
  import javax.annotation.Nullable;
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
@@ -30,10 +30,9 @@
 +    private final Runnable loadedRunnable = new Runnable() {
 +        public void run() {
 +            loadInProgress = false;
-+            final ChunkProviderServer chunkProviderServer = PlayerChunk.this.playerChunkMap.getWorld().getChunkProviderServer();
-+            PlayerChunk.this.chunk = chunkProviderServer.getOrLoadChunkAt(location.x, location.z);
++            PlayerChunk.this.chunk = PlayerChunk.this.playerChunkMap.getWorld().getChunkProviderServer().getOrLoadChunkAt(location.x, location.z);
 +            if (markStickyAfterLoading) {
-+                PlayerChunk.this.chunk.setSticky(true);
++                PlayerChunk.this.chunk.sticky = true;
 +            }
 +        }
 +    };
@@ -54,7 +53,7 @@
 +        if (this.chunk == null) {
 +            markStickyAfterLoading = true;
 +        } else {
-+            this.chunk.setSticky(true);
++            this.chunk.sticky = true;
 +        }
      }
 +    // CraftBukkit end
@@ -68,7 +67,7 @@
          if (this.c.contains(entityplayer)) {
              PlayerChunk.a.debug("Failed to add player. {} already is in chunk {}, {}", entityplayer, Integer.valueOf(this.location.x), Integer.valueOf(this.location.z));
          } else {
-@@ -42,36 +73,61 @@
+@@ -42,36 +72,61 @@
              }
  
              this.c.add(entityplayer);
@@ -90,7 +89,7 @@
 +            if (!this.done) {
 +                this.c.remove(entityplayer);
 +
-+                if (this.c.isEmpty() && (chunk == null || !chunk.isSticky())) { // CraftBukkit: keep if forced, to cause chunk ticks
++                if (this.c.isEmpty() && (chunk == null || !chunk.sticky)) { // CraftBukkit: keep if forced, to cause chunk ticks
 +                    ChunkIOExecutor.dropQueuedChunkLoad(this.playerChunkMap.getWorld(), this.location.x, this.location.z, this.loadedRunnable);
 +                    this.playerChunkMap.b(this);
 +                }
@@ -104,7 +103,7 @@
  
              this.c.remove(entityplayer);
 -            if (this.c.isEmpty()) {
-+            if (this.c.isEmpty() && !chunk.isSticky()) { // CraftBukkit: keep if forced, to cause chunk ticks
++            if (this.c.isEmpty() && !chunk.sticky) { // CraftBukkit: keep if forced, to cause chunk ticks
                  this.playerChunkMap.b(this);
              }
  

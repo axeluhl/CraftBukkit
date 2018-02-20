@@ -134,9 +134,11 @@ public class CraftChunk implements Chunk {
     public void setSticky(boolean sticky) {
         final PlayerChunkMap playerChunkMap = worldServer.getPlayerChunkMap();
         if (sticky) {
+            // Force-load the chunk at the chunk coordinates specified and mark
+            // the resulting PlayerChunk with PlayerChunk.setSticky(boolean).
             playerChunkMap.keepPlayerChunkTicking(getX(), getZ());
         } else {
-            getHandle().setSticky(false);
+            getHandle().sticky = false;
             final PlayerChunk playerChunk = playerChunkMap.getChunk(getX(), getZ());
             if (playerChunk.c.isEmpty()) {
                 playerChunkMap.b(playerChunk);
@@ -146,7 +148,7 @@ public class CraftChunk implements Chunk {
 
     @Override
     public boolean isSticky() {
-        return getHandle().isSticky();
+        return getHandle().sticky;
     }
 
     @Override

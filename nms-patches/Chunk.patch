@@ -15,7 +15,7 @@
      public boolean d;
  
 +    // CraftBukkit start - Neighbor loaded cache for chunk lighting and entity ticking
-+    private boolean stickyInPlayerChunkMap;
++    public boolean sticky;
 +    private int neighbors = 0x1 << 12;
 +    public long chunkKey;
 +
@@ -63,24 +63,7 @@
      public Chunk(World world, ChunkSnapshot chunksnapshot, int i, int j) {
          this(world, i, j);
          boolean flag = true;
-@@ -89,6 +129,16 @@
- 
-     }
- 
-+    // CraftBukkit start - allow chunk to remain sticky in PlayerChunkMap
-+    public boolean isSticky() {
-+        return stickyInPlayerChunkMap;
-+    }
-+    
-+    public void setSticky(boolean sticky) {
-+        stickyInPlayerChunkMap = sticky;
-+    }
-+    // CraftBukkit end
-+
-     public boolean a(int i, int j) {
-         return i == this.locX && j == this.locZ;
-     }
-@@ -467,7 +517,8 @@
+@@ -467,7 +507,8 @@
                      }
                  }
  
@@ -90,7 +73,7 @@
                      block.onPlace(this.world, blockposition, iblockdata);
                  }
  
-@@ -604,7 +655,15 @@
+@@ -604,7 +645,15 @@
  
      @Nullable
      public TileEntity a(BlockPosition blockposition, Chunk.EnumTileEntityState chunk_enumtileentitystate) {
@@ -107,7 +90,7 @@
  
          if (tileentity == null) {
              if (chunk_enumtileentitystate == Chunk.EnumTileEntityState.IMMEDIATE) {
-@@ -639,6 +698,13 @@
+@@ -639,6 +688,13 @@
  
              tileentity.A();
              this.tileEntities.put(blockposition, tileentity);
@@ -121,7 +104,7 @@
          }
      }
  
-@@ -681,9 +747,21 @@
+@@ -681,9 +737,21 @@
          int i = aentityslice.length;
  
          for (int j = 0; j < i; ++j) {
@@ -131,21 +114,21 @@
 +            java.util.Iterator<Entity> iter = newList.iterator();
 +            while (iter.hasNext()) {
 +                Entity entity = iter.next();
- 
--            this.world.c((Collection) entityslice);
++
 +                // Do not pass along players, as doing so can get them stuck outside of time.
 +                // (which for example disables inventory icon updates and prevents block breaking)
 +                if (entity instanceof EntityPlayer) {
 +                    iter.remove();
 +                }
 +            }
-+
+ 
+-            this.world.c((Collection) entityslice);
 +            this.world.c(newList);
 +            // CraftBukkit end
          }
  
      }
-@@ -745,8 +823,8 @@
+@@ -745,8 +813,8 @@
              while (iterator.hasNext()) {
                  Entity entity = (Entity) iterator.next();
  
@@ -156,7 +139,7 @@
                  }
              }
          }
-@@ -773,7 +851,34 @@
+@@ -773,7 +841,34 @@
          return false;
      }
  
@@ -192,7 +175,7 @@
          Chunk chunk = ichunkprovider.getLoadedChunkAt(this.locX, this.locZ - 1);
          Chunk chunk1 = ichunkprovider.getLoadedChunkAt(this.locX + 1, this.locZ);
          Chunk chunk2 = ichunkprovider.getLoadedChunkAt(this.locX, this.locZ + 1);
-@@ -809,6 +914,29 @@
+@@ -809,6 +904,29 @@
          } else {
              this.o();
              chunkgenerator.recreateStructures(this.locX, this.locZ);
